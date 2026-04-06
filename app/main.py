@@ -24,6 +24,10 @@ else:
 class QuestionRequest(BaseModel):
     question: str
 
+@app.post("/")
+async def root():
+    return {"status": "ok"}
+
 @app.post("/upload-pdf")
 async def upload_pdf(file: UploadFile = File(...)):
     # PDF 파일을 data 폴더에 저장
