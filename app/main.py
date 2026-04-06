@@ -24,7 +24,7 @@ else:
 class QuestionRequest(BaseModel):
     question: str
 
-@app.post("/")
+@app.get("/")
 async def root():
     return {"status": "ok"}
 
