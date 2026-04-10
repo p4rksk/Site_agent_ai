@@ -69,7 +69,7 @@ async def ask_question(request: QuestionRequest):
     
     return {"answer": answer, "sources": sources}
 
-@app.get(f"/download/{filename}")
+@app.get("/download/{filename}")
 async def download_pdf(filename: str):
     file_path = f"data/{filename}"
     if not os.path.exists(file_path):
