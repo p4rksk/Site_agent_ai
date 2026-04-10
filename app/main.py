@@ -4,6 +4,7 @@ from pydantic import BaseModel
 import shutil
 import os
 from app.rag import create_rag_chain 
+from langchain_core.output_parsers import StrOutputParser
 
 app = FastAPI()
 
@@ -44,6 +45,25 @@ async def upload_pdf(file: UploadFile = File(...)):
 async def ask_question(request: QuestionRequest):
     if rag_chain is None:
         return {"error": "등록된 PDF가 없습니다."}
+
+    retriever = rag_chain["retriever"]
+    llm = rag_chain["llm"]
+    prompt = rag_chain["prompt"]
+
+    # 관련 문서 검색
+    search = retriever.invoke(request.question)
+
+    # 페이지 번호 + 파일명 추출
+    sources = []
+    for result in search:
+        page = result.metadata.get("page", 0) +1 # LangChain의 페이지 번호는 0부터 시작하므로 1을 더함
+        file = result.metadata.get("source", "unknown")
+        if {"page": page, "file": file} not in sources: # 중복제거
+            sources.append({"page": page, "file": file})
+
+    # LLM 답변
+    context = "\n".join([result.page_content for result in search])
+    chain = prompt | llm | StrOutputParser() # 응답 파이프라인 
+    answer = chain.invoke({"context": context, "question": request.question})
     
-    result = rag_chain.invoke(request.question)
-    return {"answer": result}
+    return {"answer": answer, "sources": sources}

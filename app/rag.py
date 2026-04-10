@@ -5,8 +5,6 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
-from langchain_core.output_parsers import StrOutputParser
 
 load_dotenv()
 
@@ -28,9 +26,9 @@ def create_rag_chain(pdf_path: str):
         # 2. 텍스트 청크로 쪼개기
         splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
         chunks = splitter.split_documents(documents)
-
+    
         vectorstore = FAISS.from_documents(chunks, embeddings)
-        vectorstore.save_local("data/vectorstore") # 벡터DB를 파일로 저장 (서버 재시작해도 유지)
+        vectorstore.save_local("data/vectorstore") #3. 벡터DB를 파일로 저장 (서버 재시작해도 유지)
 
     # 4. LLM 설정
     llm = ChatGoogleGenerativeAI(
@@ -51,10 +49,4 @@ def create_rag_chain(pdf_path: str):
 
     # 6. RAG 체인 완성
     retriever = vectorstore.as_retriever()
-    chain = (
-        {"context": retriever, "question": RunnablePassthrough()}
-        | prompt
-        | llm
-        | StrOutputParser()
-    )
-    return chain
+    return {"retriever": retriever, "llm": llm, "prompt": prompt}
