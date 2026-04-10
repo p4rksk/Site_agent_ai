@@ -57,7 +57,7 @@ async def ask_question(request: QuestionRequest):
     sources = []
     for result in search:
         page = result.metadata.get("page", 0) +1 # LangChain의 페이지 번호는 0부터 시작하므로 1을 더함
-        file = result.metadata.get("source", "unknown")
+        file = os.path.basename(result.metadata.get("source", "unknown"))
         if {"page": page, "file": file} not in sources: # 중복제거
             sources.append({"page": page, "file": file})
 
