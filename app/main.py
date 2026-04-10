@@ -5,6 +5,7 @@ import shutil
 import os
 from app.rag import create_rag_chain 
 from langchain_core.output_parsers import StrOutputParser
+from fastapi.responses import FileResponse
 
 app = FastAPI()
 
@@ -67,3 +68,10 @@ async def ask_question(request: QuestionRequest):
     answer = chain.invoke({"context": context, "question": request.question})
     
     return {"answer": answer, "sources": sources}
+
+@app.get(f"/donwload/{filename}")
+async def download_pdf(filename: str):
+    file_path = f"data/{filename}"
+    if not os.path.exists(file_path):
+        return {"error": "파일을 찾을 수 없습니다."}
+    return FileResponse(file_path, media_type="application/pdf", filename=filename)
