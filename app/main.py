@@ -66,9 +66,25 @@ async def ask_question(request: QuestionRequest):
     context = "\n".join([result.page_content for result in search])
     chain = prompt | llm | StrOutputParser() # 응답 파이프라인 
     answer = chain.invoke({"context": context, "question": request.question})
-    
-    return {"answer": answer, "sources": sources}
 
+    # 503 에러 시 3번까지 재시도 (Gemini 서버 과부하 대비)
+    for attempt in range(3):
+        try:
+            answer = chain.invoke({"context": context, "question": request.question})
+            break
+        except Exception as e:
+            if attempt == 2:  # 3번 다 실패하면
+                return {
+                    "answer": "현재 AI 서버가 혼잡합니다. 잠시 후 다시 시도해주세요.",
+                    "sources": []
+                }
+            time.sleep(2)  # 2초 기다렸다가 재시도
+
+    if "찾을 수 없습니다" in answer:
+        return {"answer": answer, "sources": []}
+
+    return {"answer": answer, "sources": sources}
+    
 @app.get("/download/{filename}")
 async def download_pdf(filename: str):
     file_path = f"data/{filename}"
