@@ -43,7 +43,6 @@ def create_rag_chain(pdf_path: str):
         vectorstore = FAISS.from_documents(chunks, embeddings)
         vectorstore.save_local("data/vectorstore")
 
-
     # 4. LLM 설정
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.5-flash",
@@ -61,6 +60,9 @@ def create_rag_chain(pdf_path: str):
 질문: {question}
 """)
 
-    # 6. RAG 체인 완성
-    retriever = vectorstore.as_retriever()
+    # 6. RAG 체인 완성 - 유사도 높은 청크 2개만 가져오기 (속도 개선 + 관련없는 파일 제거)
+    retriever = vectorstore.as_retriever(
+        search_type="similarity_score_threshold",
+        search_kwargs={"score_threshold": 0.5, "k": 2}
+    )
     return {"retriever": retriever, "llm": llm, "prompt": prompt}
