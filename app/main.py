@@ -6,6 +6,7 @@ import os
 from app.rag import create_rag_chain 
 from langchain_core.output_parsers import StrOutputParser
 from fastapi.responses import FileResponse
+import asyncio
 
 app = FastAPI()
 
@@ -78,13 +79,13 @@ async def ask_question(request: QuestionRequest):
                     "answer": "현재 AI 서버가 혼잡합니다. 잠시 후 다시 시도해주세요.",
                     "sources": []
                 }
-            time.sleep(2)  # 2초 기다렸다가 재시도
+            await asyncio.sleep(2) # 2초 기다렸다가 재시도
 
     if "찾을 수 없습니다" in answer:
         return {"answer": answer, "sources": []}
 
     return {"answer": answer, "sources": sources}
-    
+
 @app.get("/download/{filename}")
 async def download_pdf(filename: str):
     file_path = f"data/{filename}"
