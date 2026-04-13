@@ -1,47 +1,119 @@
-from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-import os
+from fpdf import FPDF
 
-def create_sample_pdf():
-    # 윈도우 기본 한글 폰트 등록
-    font_path = "C:/Windows/Fonts/malgun.ttf"
-    pdfmetrics.registerFont(TTFont("Korean", font_path))
+def create_pdf(file_path, title, contents):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.add_font("malgun", fname="C:/Windows/Fonts/malgun.ttf", uni=True)
+    
+    # 제목
+    pdf.set_font("malgun", size=16)
+    pdf.cell(0, 10, title, ln=True, align="C")
+    pdf.ln(10)
+    
+    # 내용
+    pdf.set_font("malgun", size=11)
+    for line in contents:
+        if line == "":
+            pdf.ln(5)
+        elif line.startswith("##"):
+            pdf.set_font("malgun", size=13)
+            pdf.cell(0, 10, line.replace("##", "").strip(), ln=True)
+            pdf.set_font("malgun", size=11)
+        else:
+            pdf.cell(0, 8, line, ln=True)
+    
+    pdf.output(file_path)
+    print(f"생성 완료: {file_path}")
 
-    file_path = "data/sample_safety.pdf"
-    pdf = canvas.Canvas(file_path, pagesize=A4)
-    width, height = A4
-    pdf.setFont("Korean", 12)
 
-    lines = [
-        "현장 안전수칙 가이드",
-        "",
-        "1. 화재 대피 요령",
-        "- 화재 발생 시 즉시 비상벨을 누르세요.",
-        "- 엘리베이터 사용을 금지하고 비상계단을 이용하세요.",
-        "- 연기가 많을 경우 낮은 자세로 이동하세요.",
-        "",
-        "2. 전기 안전수칙",
-        "- 젖은 손으로 전기 기기를 만지지 마세요.",
-        "- 전선이 끊어진 경우 즉시 관리자에게 보고하세요.",
-        "",
-        "3. 추락 방지 수칙",
-        "- 2미터 이상 고소 작업 시 안전벨트를 착용하세요.",
-        "- 안전모는 현장 진입 시 반드시 착용하세요.",
-        "",
-        "4. 비상 연락처",
-        "- 현장 관리자: 010-1234-5678",
-        "- 소방서: 119",
-        "- 응급실: 112",
-    ]
+# A구역 가이드
+create_pdf("data/zone_a_production.pdf", "A구역 생산라인 안전가이드", [
+    "## A구역 기본 정보",
+    "위치: 본관 1층 동쪽",
+    "담당 관리자: 김철수 (010-1111-2222)",
+    "",
+    "## 필수 안전장비",
+    "- 안전모 착용 필수",
+    "- 안전화 착용 필수",
+    "- 귀마개 착용 권장 (소음 85dB 이상)",
+    "",
+    "## 작업 전 점검사항",
+    "- 기계 이상 유무 육안 점검",
+    "- 작업 구역 정리정돈 확인",
+    "- 비상정지 버튼 위치 확인 (각 라인 시작점 빨간 버튼)",
+    "",
+    "## 금지사항",
+    "- 회전 기계 근처 넥타이, 장갑 착용 금지",
+    "- 기계 작동 중 덮개 제거 금지",
+    "- 허가되지 않은 인원 출입 금지",
+])
 
-    y = height - 50
-    for line in lines:
-        pdf.drawString(50, y, line)
-        y -= 25
+# B구역 가이드
+create_pdf("data/zone_b_chemical.pdf", "B구역 화학물질 보관소 안전가이드", [
+    "## B구역 기본 정보",
+    "위치: 본관 1층 서쪽",
+    "담당 관리자: 이영희 (010-3333-4444)",
+    "",
+    "## 필수 안전장비",
+    "- 방독마스크 착용 필수",
+    "- 보안경 착용 필수",
+    "- 내화학성 장갑 착용 필수",
+    "",
+    "## 주요 안전수칙",
+    "- 단독 작업 금지 (반드시 2인 1조)",
+    "- 화학물질 MSDS 숙지 후 작업",
+    "- 음식물 반입 금지",
+    "",
+    "## 비상 시 대처",
+    "- 화학물질 누출 시 즉시 대피 후 관리자 보고",
+    "- 비상샤워기 위치: B구역 입구 우측",
+    "- 눈 접촉 시 15분 이상 세안 후 병원 이송",
+])
 
-    pdf.save()
-    print(f"PDF 생성 완료: {file_path}")
+# C구역 가이드
+create_pdf("data/zone_c_warehouse.pdf", "C구역 창고 물류구역 안전가이드", [
+    "## C구역 기본 정보",
+    "위치: 별관 1층 전체",
+    "담당 관리자: 박민수 (010-5555-6666)",
+    "",
+    "## 필수 안전장비",
+    "- 안전모 착용 필수",
+    "- 안전화 착용 필수",
+    "- 무거운 물건 이동 시 허리 보호대 착용",
+    "",
+    "## 주요 안전수칙",
+    "- 지게차 운행 구역 보행 금지 (노란 선 밖으로 이동)",
+    "- 적재물 높이 2m 초과 금지",
+    "- 지게차 후진 시 반드시 경고음 확인",
+    "",
+    "## 비상구 위치",
+    "- 북쪽 출구: 창고 북쪽 끝",
+    "- 남쪽 출구: 창고 남쪽 끝",
+])
 
-create_sample_pdf()
+# 비상대피 가이드
+create_pdf("data/emergency_guide.pdf", "비상대피 및 응급처치 가이드", [
+    "## 비상 연락망",
+    "- 현장 안전관리자: 010-5678-1234",
+    "- 당직 관리자: 010-9999-0000",
+    "- 소방서: 119",
+    "- 응급실: 112",
+    "",
+    "## 화재 대피 절차",
+    "1. 화재 발견 즉시 비상벨 누르기",
+    "2. 엘리베이터 사용 금지, 비상계단 이용",
+    "3. 건물 외부 주차장 앞 집결",
+    "4. 인원 점검 후 안전관리자에게 보고",
+    "",
+    "## 부상자 발생 시 절차",
+    "1. 즉시 119 신고",
+    "2. 현장 안전관리자 연락",
+    "3. 부상자 이동 금지 (척추 부상 가능성)",
+    "4. 응급처치함 위치: 각 구역 입구 벽면",
+    "",
+    "## 대피장소",
+    "- 1차 대피장소: 건물 외부 주차장 앞",
+    "- 2차 대피장소: 정문 밖 도로변",
+])
+
+print("모든 PDF 생성 완료!")

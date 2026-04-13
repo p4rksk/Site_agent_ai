@@ -14,21 +14,35 @@ def create_rag_chain(pdf_path: str):
         google_api_key=os.getenv("GOOGLE_API_KEY")
     )
 
-    # 벡터 DB 파일이 있으면 불러오기 
-    if os.path.exists("data/vectorstore"):
-        vectorstore = FAISS.load_local("data/vectorstore", embeddings, allow_dangerous_deserialization=True) # 경로, 임베딩, 위험한 직렬화(객제를 파일이나 네트워크로 전송할 수있는 형태로 변환) 허용
- 
-    else:
-        # 1. PDF 읽기
+    if pdf_path is None:
+        # 서버 시작 시 기존 vectorstore 불러오기
+        vectorstore = FAISS.load_local("data/vectorstore", embeddings, allow_dangerous_deserialization=True)
+
+    elif os.path.exists("data/vectorstore"):
+        # 기존 vectorstore 불러오기
+        existing = FAISS.load_local("data/vectorstore", embeddings, allow_dangerous_deserialization=True)
+
+        # 새 PDF 임베딩
         loader = PyPDFLoader(pdf_path)
         documents = loader.load()
-
-        # 2. 텍스트 청크로 쪼개기
         splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
         chunks = splitter.split_documents(documents)
-    
+        new_vectorstore = FAISS.from_documents(chunks, embeddings)
+
+        # 기존 + 새 PDF 합치기
+        existing.merge_from(new_vectorstore)
+        existing.save_local("data/vectorstore")
+        vectorstore = existing
+
+    else:
+        # vectorstore 없으면 새로 만들기
+        loader = PyPDFLoader(pdf_path)
+        documents = loader.load()
+        splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+        chunks = splitter.split_documents(documents)
         vectorstore = FAISS.from_documents(chunks, embeddings)
-        vectorstore.save_local("data/vectorstore") #3. 벡터DB를 파일로 저장 (서버 재시작해도 유지)
+        vectorstore.save_local("data/vectorstore")
+
 
     # 4. LLM 설정
     llm = ChatGoogleGenerativeAI(
