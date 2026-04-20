@@ -1,37 +1,35 @@
-package com.siteagent.backend.admin;
+package com.siteagent.backend.site_admin;
 
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import com.siteagent.backend.admin.Admin;
+
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "admin_tb")
+@Table(name = "site_admin_tb")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EntityListeners(AuditingEntityListener.class)
-public class Admin {
+public class SiteAdmin {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String companyName;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "admin_id", nullable = false)
+    private Admin admin;
 
     @Column(nullable = false, unique = true)
     private String loginId;
 
     @Column(nullable = false)
     private String password;
-
-    @Column(nullable = false, unique = true)
-    private String businessNumber; 
-
-    @Column(nullable = false)
-    private String phone;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -42,23 +40,13 @@ public class Admin {
     private LocalDateTime updatedAt;
 
     @Builder
-    public Admin(String companyName, String loginId, String password, String businessNumber, String phone) {
-        this.companyName = companyName;
+    public SiteAdmin(Admin admin, String loginId, String password) {
+        this.admin = admin;
         this.loginId = loginId;
         this.password = password;
-        this.businessNumber = businessNumber;
-        this.phone = phone;
     }
 
-    public void updateProfile(String companyName, String password, String businessNumber, String phone) {
-        this.companyName = companyName;
+    public void updatePassword(String password) {
         this.password = password;
-        this.businessNumber = businessNumber;
-        this.phone = phone;
-    }
-
-    public enum AdminRole {
-        SUPER_ADMIN,
-        SITE_ADMIN
     }
 }

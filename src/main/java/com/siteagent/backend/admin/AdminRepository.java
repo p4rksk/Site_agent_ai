@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AdminRepository extends JpaRepository<Admin, Long> {
 
-    Optional<Admin> findBySiteAdminId(String siteAdminId);
+    Optional<Admin> findByloginId(String loginId);
 
-    boolean existsBySiteAdminId(String siteAdminId);
+    boolean existsByloginId(String loginId);
 }

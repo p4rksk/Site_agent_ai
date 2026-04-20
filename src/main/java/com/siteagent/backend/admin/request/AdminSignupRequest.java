@@ -5,7 +5,9 @@
     String companyName,
     String businessNumber,
     String phone,
+    String adminId,
+    String adminPassword,
     String siteAdminId,
-    String password
+    String siteAdminPassword
 ) {}
  

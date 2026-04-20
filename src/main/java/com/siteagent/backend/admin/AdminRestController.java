@@ -32,8 +32,14 @@ public class AdminRestController {
 
     //아이디 중복체크
     @GetMapping("/check-id")
-    public ResponseEntity<?> checkId(@RequestParam String adminId) {
-        boolean isDuplicate = adminService.checkDuplicateAdminId(adminId);
+    public ResponseEntity<?> checkId(@RequestParam String loginId) {
+        boolean isDuplicate = adminService.checkDuplicateAdminId(loginId);
+        return ResponseEntity.ok(isDuplicate);
+    }
+
+    @GetMapping("/check-site-id")
+    public ResponseEntity<?> checkSiteId(@RequestParam String loginId) {
+        boolean isDuplicate = adminService.checkDuplicateAdminId(loginId);
         return ResponseEntity.ok(isDuplicate);
     }
     
