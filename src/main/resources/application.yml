@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: site-agent-backend
+
+  datasource:
+    url: jdbc:postgresql://dpg-d7iq410sfn5c738lhqe0-a.oregon-postgres.render.com/site_agent_db?sslmode=require
+    username: site_agent_db_user
+    password: RzesLBNCGv6pAs3rEfoPHdluxnVZPUaM
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+server:
+  port: ${PORT:8080}
+
+jwt:
+  secret: ${JWT_SECRET:localdevsecretkey1234567890abcdef}
+  expiration: 86400000
+
+kakao:
+  client-id: ${KAKAO_CLIENT_ID:}
+  redirect-uri: ${KAKAO_REDIRECT_URI:}
