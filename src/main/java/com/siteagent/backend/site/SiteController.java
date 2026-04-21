@@ -2,12 +2,15 @@ package com.siteagent.backend.site;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.siteagent.backend.exception.CustomException;
 import com.siteagent.backend.site.request.SiteCreateRequest;
+import com.siteagent.backend.site.response.SiteListResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -41,6 +44,13 @@ public class SiteController {
 
         siteService.siteCreate(requestDTO, adminId);
         return ResponseEntity.ok().build();
+    }
+
+    // 현장 목록 조회
+    @GetMapping
+    public ResponseEntity<List<SiteListResponse>> getSiteList(HttpServletRequest request) {
+        Long adminId = (Long) request.getAttribute("adminId");
+        return ResponseEntity.ok(siteService.getSiteList(adminId));
     }
 
 }

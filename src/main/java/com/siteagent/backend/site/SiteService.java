@@ -2,7 +2,9 @@ package com.siteagent.backend.site;
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.siteagent.backend.admin.AdminRepository;
 import com.siteagent.backend.exception.CustomException;
 import com.siteagent.backend.site.request.SiteCreateRequest;
+import com.siteagent.backend.site.response.SiteListResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +39,14 @@ public class SiteService {
             .build();
             
         siteRepository.save(sit);     
+    }
+
+    // 현장 목록조회 
+    public List<SiteListResponse> getSiteList(Long adminId) {
+        return siteRepository.findSitesByAdminId(adminId)
+                .stream()
+                .map(SiteListResponse::from)
+                .collect(Collectors.toList());
     }
 
 }
