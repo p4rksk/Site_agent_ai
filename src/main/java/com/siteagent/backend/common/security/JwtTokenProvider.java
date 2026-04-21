@@ -26,10 +26,10 @@ public class JwtTokenProvider {
     }
 
     // 토큰 생성
-    public String createToken(Long adminId, String adminLoginId) {
+    public String createToken(Long id, String loginId) {
         return Jwts.builder()
-                .subject(String.valueOf(adminId))
-                .claim("adminLoginId", adminLoginId)
+                .subject(String.valueOf(id))
+                .claim("loginId", loginId)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getKey())
