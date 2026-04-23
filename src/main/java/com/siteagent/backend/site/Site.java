@@ -9,6 +9,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.siteagent.backend.admin.Admin;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "site_tb")
@@ -24,6 +26,9 @@ public class Site {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id", nullable = false)
     private Admin admin;
+
+    @OneToMany(mappedBy = "site", fetch = FetchType.LAZY)
+    private List<SitePdf> sitePdfs = new ArrayList<>();
 
     @Column(nullable = false)
     private String name;
@@ -57,12 +62,9 @@ public class Site {
         this.managerPhone = managerPhone;
     }
 
-    public void update(String name, String address, Double lat, Double lng,
+    public void update(String name, 
                        String managerName, String managerPhone) {
         this.name = name;
-        this.address = address;
-        this.lat = lat;
-        this.lng = lng;
         this.managerName = managerName;
         this.managerPhone = managerPhone;
     }

@@ -24,4 +24,6 @@ public interface SiteRepository extends JpaRepository<Site, Long> {
         ORDER BY s.id DESC
         """, nativeQuery = true)
     List<SiteListProjection> findSitesByAdminId(@Param("adminId") Long adminId);
+
+    
 }

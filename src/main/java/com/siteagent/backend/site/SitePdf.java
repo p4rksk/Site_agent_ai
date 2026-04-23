@@ -42,7 +42,7 @@ public class SitePdf {
     private LocalDateTime updatedAt;
 
     @Builder
-    public SitePdf(Site site, String fileName, String filePath) {
+    public SitePdf(Site site, String fileName, String filePath, Boolean isActive) {
         this.site = site;
         this.fileName = fileName;
         this.filePath = filePath;
