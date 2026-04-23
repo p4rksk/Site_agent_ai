@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.siteagent.backend.exception.CustomException;
 import com.siteagent.backend.site.request.SiteCreateRequest;
+import com.siteagent.backend.site.response.SiteDetailResponse;
 import com.siteagent.backend.site.response.SiteListResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,5 +53,50 @@ public class SiteController {
         Long adminId = (Long) request.getAttribute("adminId");
         return ResponseEntity.ok(siteService.getSiteList(adminId));
     }
+
+    //현장 상세보기 
+    @GetMapping("/{siteId}")
+    public ResponseEntity<?> getSite(@PathVariable("siteId") Long siteId,
+                                      HttpServletRequest request) {
+        SiteDetailResponse response = siteService.getSite(siteId);
+        return ResponseEntity.ok(response);
+    }
+    
+    // 현장 수정
+    @PutMapping("/{siteId}")
+    public ResponseEntity<?> updateSite(
+            @PathVariable("siteId") Long siteId,
+            @RequestParam("name") String name,
+            @RequestParam("managerName") String managerName,
+            @RequestParam("managerPhone") String managerPhone,
+            @RequestParam(value = "file", required = false) MultipartFile file,
+            HttpServletRequest request) {
+    
+        String role = (String) request.getAttribute("role");
+    
+        if (!"SUPER_ADMIN".equals(role) && !"SITE_ADMIN".equals(role)) {
+            throw new CustomException(403, "권한이 없습니다.");
+        }
+    
+        siteService.siteUpdate(siteId, name, managerName, managerPhone, file);
+        return ResponseEntity.ok().build();
+    }
+
+    //현장 삭제
+    @DeleteMapping("/{siteId}")
+    public ResponseEntity<?> deleteSite(
+            @PathVariable("siteId") Long siteId,
+            HttpServletRequest request) {
+
+        String role = (String) request.getAttribute("role");
+
+        if (!"SUPER_ADMIN".equals(role) && !"SITE_ADMIN".equals(role)) {
+            throw new CustomException(403, "권한이 없습니다.");
+        }
+
+        siteService.siteDelete(siteId);
+        return ResponseEntity.noContent().build();
+    }
+    
 
 }
