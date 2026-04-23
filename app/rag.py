@@ -1,4 +1,6 @@
 import os
+import tempfile
+import requests
 from dotenv import load_dotenv
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain_community.document_loaders import PyMuPDFLoader
@@ -11,7 +13,7 @@ from langchain_core.prompts import ChatPromptTemplate
 load_dotenv()
 
 
-def create_rag_chain(pdf_path: str):
+def create_rag_chain(pdf_url: str):
     embeddings = GoogleGenerativeAIEmbeddings(
         model="gemini-embedding-001",
         google_api_key=os.getenv("GOOGLE_API_KEY")
@@ -22,54 +24,31 @@ def create_rag_chain(pdf_path: str):
         google_api_key=os.getenv("GOOGLE_API_KEY")
     )
 
+    response = requests.get(pdf_url)
 
-    if pdf_path is None:
-        # 서버 시작 시 기존 vectorstore 불러오기
-        vectorstore = FAISS.load_local("data/vectorstore", embeddings, allow_dangerous_deserialization=True)
+    with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+        tmp.write(response.content)
+        tmp_path = tmp.name
 
-    elif os.path.exists("data/vectorstore"):
-        # 기존 vectorstore 불러오기
-        existing = FAISS.load_local("data/vectorstore", embeddings, allow_dangerous_deserialization=True)
-
-        # 새 PDF 임베딩
+    try:
         loader = PyMuPDFLoader(
-            pdf_path, 
+            tmp_path,
             mode="page",
-            images_inner_format="markdown-img", #  ![이미지설명](링크) 형태로 저장
+            images_inner_format="markdown-img",
             images_parser=LLMImageBlobParser(model=llm)
         )
-    
-        splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100) 
-        chunks = []
-        try:
-            for documents in loader.lazy_load():
-             
-                chunks.extend(splitter.split_documents([documents]))
-        except Exception as e:
-            print(f"PDF 로딩 에러: {e}")
-           
-        new_vectorstore = FAISS.from_documents(chunks, embeddings)
-        # 기존 + 새 PDF 합치기
-        existing.merge_from(new_vectorstore)
-        existing.save_local("data/vectorstore")
-        vectorstore = existing
 
-    else:
-        # vectorstore 없으면 새로 만들기
-        loader = PyMuPDFLoader(
-            pdf_path, 
-            mode="page",
-            images_inner_format="markdown-img", #  ![이미지설명](링크) 형태로 저장
-            images_parser=LLMImageBlobParser(model=llm)
-        )
         splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
         chunks = []
 
-        for documents in loader.lazy_load(): # PDF의 한페이지씩 쪼개서 문서 파일로 변환 메모리 효율적 사용
+        for documents in loader.lazy_load():
             chunks.extend(splitter.split_documents([documents]))
 
         vectorstore = FAISS.from_documents(chunks, embeddings)
-        vectorstore.save_local("data/vectorstore")
+
+    finally:
+        # 임시파일 삭제
+        os.unlink(tmp_path)
 
     
     # 5. 프롬프트 설정 - LLM에게 어떻게 답변할지 지시하는 것
