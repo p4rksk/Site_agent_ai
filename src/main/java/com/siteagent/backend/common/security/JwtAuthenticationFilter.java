@@ -5,14 +5,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.siteagent.backend.exception.CustomException;
 
 import java.io.IOException;
 
-@Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -23,13 +22,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String token = resolveToken(request);
+
 
         //  브라우저가 서버에게 요청 보내도 되는지 확인할 때 OPTIONS를 보냄 이게 CORS에 걸리다보니까 통과 시켜주기
         if (request.getMethod().equals("OPTIONS")) { 
             filterChain.doFilter(request, response);
             return;
         }
+
+        // 임시 예외처리
+        String uri = request.getRequestURI();
+        if (uri.equals("/user/kakao-login")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+        String token = resolveToken(request);
         
         if (token == null) {
             throw new CustomException(401, "토큰이 없습니다.");

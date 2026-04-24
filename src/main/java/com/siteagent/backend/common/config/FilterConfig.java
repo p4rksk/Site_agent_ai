@@ -1,6 +1,8 @@
 package com.siteagent.backend.common.config;
 
 import com.siteagent.backend.common.security.JwtAuthenticationFilter;
+import com.siteagent.backend.common.security.JwtTokenProvider;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -10,12 +12,12 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class FilterConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
     public FilterRegistrationBean<JwtAuthenticationFilter> jwtFilter() {
         FilterRegistrationBean<JwtAuthenticationFilter> bean = new FilterRegistrationBean<>();
-        bean.setFilter(jwtAuthenticationFilter);
+        bean.setFilter(new JwtAuthenticationFilter(jwtTokenProvider));
         bean.addUrlPatterns(    "/admin/sites/*",
         "/admin/chatlogs",
         "/admin/profile",

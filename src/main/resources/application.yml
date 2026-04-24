@@ -1,7 +1,6 @@
 spring:
   application:
     name: site-agent-backend
-    
 
   datasource:
     url: jdbc:postgresql://dpg-d7iq410sfn5c738lhqe0-a.oregon-postgres.render.com/site_agent_db?sslmode=require
@@ -43,5 +42,6 @@ jwt:
   expiration: 2592000000
 
 kakao:
-  client-id: ${KAKAO_CLIENT_ID:}
-  redirect-uri: ${KAKAO_REDIRECT_URI:}
+  client-id: 4e6d06198d4374e6a5422f096bd2476b
+  client-secret: uDbD6rDG7z0JqRN4P7LzHjaeO5b9CEjj
+  redirect-uri: http://localhost:3000/auth/kakao/callback
