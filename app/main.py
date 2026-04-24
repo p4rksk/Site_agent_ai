@@ -36,16 +36,7 @@ async def root():
 
 @app.post("/upload-pdf")
 async def upload_pdf(request:UploadRequest):
-    async with httpx.AsyncClient() as client:
-        response = await client.get(request.pdf_url)
-    
-    # siteId별로 파일 저장
-    file_path = f"data/{request.site_id}.pdf"
-    with open(file_path, "wb") as f:
-        f.write(response.content)
-    
-    # siteId별로 rag_chain 저장
-    rag_chains[request.site_id] = create_rag_chain(file_path)
+    rag_chains[request.site_id] = create_rag_chain(request.pdf_url) 
     return {"message": "업로드 완료. 질문할 수 있어요!"}
 
 @app.post("/ask")

@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: site-agent-backend
+    
+
+  datasource:
+    url: jdbc:postgresql://dpg-d7iq410sfn5c738lhqe0-a.oregon-postgres.render.com/site_agent_db?sslmode=require
+    username: site_agent_db_user
+    password: RzesLBNCGv6pAs3rEfoPHdluxnVZPUaM
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  sql:
+    init:
+      mode: always
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+supabase:
+  url: https://mnychkcbsfnhepqzdked.supabase.co
+  key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ueWNoa2Nic2ZuaGVwcXpka2VkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Njg0NDA1MywiZXhwIjoyMDkyNDIwMDUzfQ.XEXWGUy8peJnfoz8gr5qiGkRHgbwTLKs0Foc5pIBYbo
+  bucket: pdf
+
+fastapi:
+  url: http://localhost:8000
+
+server:
+  port: ${PORT:8080}
+
+jwt:
+  secret: ${JWT_SECRET:localdevsecretkey1234567890abcdef}
+  expiration: 2592000000
+
+kakao:
+  client-id: ${KAKAO_CLIENT_ID:}
+  redirect-uri: ${KAKAO_REDIRECT_URI:}
