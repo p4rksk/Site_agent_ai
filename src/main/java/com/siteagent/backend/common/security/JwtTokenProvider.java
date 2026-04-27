@@ -37,7 +37,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // 토큰에서 adminId 꺼내기
+    // 토큰에서 ID 꺼내기
     public Long getId(String token) {
         Claims claims = getClaims(token);
         return Long.parseLong(claims.getSubject());

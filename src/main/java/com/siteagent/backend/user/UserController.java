@@ -26,7 +26,13 @@ public class UserController {
         String code = body.get("code");
         String token = userService.kakaoLogin(code);
         Long userId = jwtTokenProvider.getId(token);
-        return ResponseEntity.ok(new UserLoginResponse(token,"user", userId));
+
+        System.out.println("🔍 token: " + token);
+        System.out.println("🔍 userId: " + userId);
+
+        UserLoginResponse userLoginResponse = new UserLoginResponse(token,"user", userId);
+        System.out.println("response" + userLoginResponse);
+        return ResponseEntity.ok(userLoginResponse);
     }
     
 
