@@ -105,6 +105,6 @@ def create_rag_chain(pdf_url: str):
 
     retriever = vectorstore.as_retriever(
     search_type="similarity_score_threshold",
-    search_kwargs={"score_threshold": 0.3, "k": 3}
+    search_kwargs={"score_threshold": 0.5, "k": 3}
 )
     return {"retriever": retriever, "llm": llm, "prompt": prompt}
