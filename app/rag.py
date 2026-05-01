@@ -65,6 +65,6 @@ def create_rag_chain(pdf_url: str):
     # 6. RAG 체인 완성 - 유사도 높은 청크 2개만 가져오기 (속도 개선 + 관련없는 파일 제거)
     retriever = vectorstore.as_retriever(
         search_type="similarity_score_threshold",
-        search_kwargs={"score_threshold": 0.6, "k": 2}
+        search_kwargs={"k": 3}
     )
     return {"retriever": retriever, "llm": llm, "prompt": prompt}
