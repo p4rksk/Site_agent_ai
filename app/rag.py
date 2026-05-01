@@ -42,8 +42,10 @@ def create_rag_chain(pdf_url: str):
         chunks = []
 
         for documents in loader.lazy_load():
+            print(f"[DEBUG] 페이지 내용 길이: {len(documents.page_content)}")
+            print(f"[DEBUG] 페이지 내용 미리보기: {documents.page_content[:500]}...")
             chunks.extend(splitter.split_documents([documents]))
-
+            print(f"[DEBUG] 총 청크 수: {len(chunks)}")
         vectorstore = FAISS.from_documents(chunks, embeddings)
 
     finally:
