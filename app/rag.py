@@ -34,6 +34,7 @@ def create_rag_chain(pdf_url: str):
         loader = PyMuPDFLoader(
             tmp_path,
             mode="page",
+            extract_images=True,
             images_inner_format="markdown-img",
             images_parser=LLMImageBlobParser(model=llm)
         )
