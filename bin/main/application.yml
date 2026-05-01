@@ -1,47 +1,43 @@
 spring:
   application:
-    name: site-agent-backend
-
+    name: backend
   datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://dpg-d7iq410sfn5c738lhqe0-a.oregon-postgres.render.com/site_agent_db?sslmode=require
+    username: site_agent_db_user
+    password: RzesLBNCGv6pAs3rEfoPHdluxnVZPUaM
     driver-class-name: org.postgresql.Driver
-
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     show-sql: true
-    defer-datasource-initialization: true
     properties:
       hibernate:
         format_sql: true
-
-  sql:
-    init:
-      mode: never
-
+        dialect: org.hibernate.dialect.PostgreSQLDialect
   servlet:
     multipart:
-      max-file-size: 50MB
-      max-request-size: 50MB
-
-supabase:
-  url: ${SUPABASE_URL}
-  key: ${SUPABASE_KEY}
-  bucket: pdf
-
-fastapi:
-  url:  ${FASTAPI_URL}
-
-server:
-  port: ${PORT:8080}
+      max-file-size: 10MB
+      max-request-size: 10MB
+  sql:
+    init:
+      mode: never  # 이 줄 추가!
 
 jwt:
-  secret: ${JWT_SECRET}
-  expiration: 2592000000
+  secret: localdevsecretkey1234567890abcdef
+  expiration: 86400000
+
+supabase:
+  url: https://mnychkcbsfnhepqzdked.supabase.co
+  key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ueWNoa2Nic2ZuaGVwcXpka2VkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Njg0NDA1MywiZXhwIjoyMDkyNDIwMDUzfQ.XEXWGUy8peJnfoz8gr5qiGkRHgbwTLKs0Foc5pIBYbo
+  bucket: site-pdfs
 
 kakao:
-  client-id: ${KAKAO_CLIENT_ID}
-  client-secret: ${KAKAO_CLIENT_SECRET}
-  redirect-uri: ${KAKAO_REDIRECT_URI}
+  client-id: 4e6d06198d4374e6a5422f096bd2476b
+  client-secret: uDbD6rDG7z0JqRN4P7LzHjaeO5b9CEjj
+  redirect-uri: http://localhost:3000/auth/kakao/callback
+
+fastapi:
+  url: http://localhost:8000
+
+server:
+  port: 8080
