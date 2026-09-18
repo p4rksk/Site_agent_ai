@@ -1,6 +1,4 @@
 # Site Agent AI 프로젝트 개요
-> 현장 근무자용 AI 에이전트 RAG 서비스(FastAPI) 현재 구현 상태를 구조화한 문서입니다.  
-> 원 저장소: [p4rksk/Site_agent_ai](https://github.com/p4rksk/Site_agent_ai) (README 없음) · 코드 스냅샷 (2026-05-01)
 ---
 ## 1. 시연 화면
 <img width="800" height="399" alt="site_agent_-AI 대화하면" src="https://github.com/user-attachments/assets/20110923-1074-4980-95bc-b6649a6a9dcc" />
